@@ -40,7 +40,7 @@ def get_file_links(url_in):
     for url in expansion:
         # For each url, conduct the same method...
         new_url = url_in + url
-        print("Scraping sub-directory " + new_url)
+        print("Reading sub-directory " + new_url)
         new_zips, new_sgfs, new_expansion = get_file_links(new_url)  # Recursively run the function
         zips.extend(new_zips)
         sgfs.extend(new_sgfs)
@@ -77,10 +77,31 @@ def downloader(url, dl_path, extract_path, full_download=False):
         print("\rPausing for 0.1 second...\n")
         time.sleep(0.1)  # Force a 0.1 second delay to not kill the website
 
-    file_date = re.("[A-Z][a-z]{2}-+\d-\d{4}", filename)
-    file_mon = file_date[0:3]
-    file_full = file_mon + file_date[-4:] + "/"
+    if file_ext == ".zip":
 
+        file_date = re.findall("[A-Z][a-z]{2}-.+-\d{4}", filename)
+        file_mon = file_date[0][0:3]
+
+        # Convert month to numeric
+        mon_dict = {
+            "Jan": "01",
+            "Feb": "02",
+            "Mar": "03",
+            "Apr": "04",
+            "May": "05",
+            "Jun": "06",
+            "Jul": "07",
+            "Aug": "08",
+            "Sep": "09",
+            "Oct": "10",
+            "Nov": "11",
+            "Dec": "12"
+        }
+        file_full = file_date[0][-4:] + "-" + mon_dict[file_mon] + "/"
+
+    elif file_ext == ".sgf":
+        file_date = re.findall("-\d{4}-\d{2}-\d{2}-\d{4}", filename)
+        file_full = file_date[0][1:8] + "/"
 
     if not os.path.isdir(extract_path + file_full):
         os.mkdir(extract_path + file_full)
@@ -92,8 +113,8 @@ def downloader(url, dl_path, extract_path, full_download=False):
         print("\rUnzipping " + filename)
         with ZipFile(dl_path + filename, "r") as zipObj:
             zipObj.extractall(extract_path + file_full)
-
     return None
+
 
 # Script test
 start_time = datetime.datetime.now()
@@ -101,7 +122,7 @@ start_time = datetime.datetime.now()
 import_url = "http://www.boardspace.net/hive/hivegames/"
 zips, sgfs, expansion = get_file_links(import_url)
 
-download_list = zips + sgfs
+download_list = sgfs + zips
 download_path = "../data/download_raw/"
 game_path = "../data/download_games/"
 
