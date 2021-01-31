@@ -8,6 +8,7 @@ import os
 import shutil
 import sys
 import time
+import datetime
 
 
 def get_file_links(url_in):
@@ -73,19 +74,30 @@ def downloader(url, dl_path, extract_path, full_download=False):
                     done = int(50 * dl/total_length)
                     sys.stdout.write("\r[%s%s]" % ("=" * done, " " * (50-done)))
                     sys.stdout.flush()
-        print("\rPausing for 2 seconds...")
-        time.sleep(2)  # Force a 2 second delay to not kill the website
+        print("\rPausing for 0.1 second...\n")
+        time.sleep(0.1)  # Force a 0.1 second delay to not kill the website
+
+    file_date = re.("[A-Z][a-z]{2}-+\d-\d{4}", filename)
+    file_mon = file_date[0:3]
+    file_full = file_mon + file_date[-4:] + "/"
+
+
+    if not os.path.isdir(extract_path + file_full):
+        os.mkdir(extract_path + file_full)
 
     if file_ext == ".sgf":
         print("\rCopying " + filename)
-        shutil.copy(dl_path + filename, extract_path)
+        shutil.copy(dl_path + filename, extract_path + file_full)
     elif file_ext == ".zip":
         print("\rUnzipping " + filename)
         with ZipFile(dl_path + filename, "r") as zipObj:
-            zipObj.extractall(extract_path)
+            zipObj.extractall(extract_path + file_full)
+
     return None
 
 # Script test
+start_time = datetime.datetime.now()
+
 import_url = "http://www.boardspace.net/hive/hivegames/"
 zips, sgfs, expansion = get_file_links(import_url)
 
@@ -93,5 +105,10 @@ download_list = zips + sgfs
 download_path = "../data/download_raw/"
 game_path = "../data/download_games/"
 
+
 for download_req in download_list:
     downloader(download_req, download_path, game_path)
+
+end_time = datetime.datetime.now()
+
+print("Execution time: %3.2f s".format(end_time - start_time))
