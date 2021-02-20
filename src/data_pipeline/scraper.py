@@ -131,5 +131,5 @@ for download_req in download_list:
     downloader(download_req, download_path, game_path)
 
 end_time = datetime.datetime.now()
-
-print("Execution time: {:2.2}s".format(end_time - start_time))
+time_taken = end_time - start_time
+print("Execution time: {}s".format(time_taken))
