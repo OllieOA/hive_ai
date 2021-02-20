@@ -74,8 +74,8 @@ def downloader(url, dl_path, extract_path, full_download=False):
                     done = int(50 * dl/total_length)
                     sys.stdout.write("\r[%s%s]" % ("=" * done, " " * (50-done)))
                     sys.stdout.flush()
-        print("\rPausing for 0.1 second...\n")
-        time.sleep(0.1)  # Force a 0.1 second delay to not kill the website
+        #print("\rPausing for 0.01 second...\n")
+        #time.sleep(0.01)  # Force a 0.1 second delay to not kill the website
 
     if file_ext == ".zip":
 
@@ -116,7 +116,7 @@ def downloader(url, dl_path, extract_path, full_download=False):
     return None
 
 
-# Script test
+# Script test to be commented
 start_time = datetime.datetime.now()
 
 import_url = "http://www.boardspace.net/hive/hivegames/"
@@ -132,4 +132,4 @@ for download_req in download_list:
 
 end_time = datetime.datetime.now()
 
-print("Execution time: %3.2f s".format(end_time - start_time))
+print("Execution time: {:2.2}s".format(end_time - start_time))
